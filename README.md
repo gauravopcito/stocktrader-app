@@ -448,6 +448,8 @@ To learn more about the st-odm release, try:
 
 **IMPORTANT:** The IBM Operational Decision Manager (ODM) installed is a non-persistent IBM ODM deployment.
 
+**Note:** Make sure to add an image policy in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/bitnami/redis:*` registry.
+
 2. We now need to import the already developed loyalty level IBM ODM project which our IBM StockTrader Application will use. To import the such project:
 
 - Download the project from this [link](https://github.com/IBMStockTrader/portfolio/blob/master/stock-trader-loyalty-decision-service.zip)
@@ -667,6 +669,8 @@ local                   	http://127.0.0.1:8879/charts
 stocktrader                      	https://raw.githubusercontent.com/ibm-cloud-architecture/stocktrader-helm-repo/master/docs/charts                      
 ibm-charts              	https://raw.githubusercontent.com/IBM/charts/master/repo/stable/  
 ```
+
+**Note:** Make sure to add an image policy in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/ibmstocktrader/*` registry.
 
 2. Deploy the IBM StockTrader Application using the [st_app_values_v2.yaml](installation/application/st_app_values_v2.yaml) file:
 
