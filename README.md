@@ -123,7 +123,7 @@ st-docker-registry    kubernetes.io/dockercfg               1         28s
 2. Install IBM Db2 Developer-C Edition using the [db2_values.yaml](installation/middleware/db2_values.yaml) file:
 
 ```
-$ helm install -n st-db2 --namespace stocktrader --tls ibm-charts/ibm-db2oltp-dev -f db2_values.yaml
+$ helm install -n st-db2 --namespace stocktrader --tls ibm-charts/ibm-db2oltp-dev -f installation/middleware/db2_values.yaml
 NAME:   st-db2
 LAST DEPLOYED: Wed Jun 27 18:49:04 2018
 NAMESPACE: stocktrader
@@ -172,7 +172,7 @@ At this point we can be sure the IBM Db2 Developer-C Edition and the **STOCKTRD*
 3. Now, we need to create the appropriate structure in the **STOCKTRD** database that the IBM StockTrader Application needs. We do so by initialising the database with the [initialise_stocktrader_db_v2.yaml](installation/middleware/initialise_stocktrader_db_v2.yaml) file:
 
 ```
-$ kubectl apply -f initialise_stocktrader_db_v2.yaml
+$ kubectl apply -f installation/middleware/initialise_stocktrader_db_v2.yaml
 job "initialise-stocktrader-db" created
 ```
 
@@ -209,7 +209,7 @@ $ kubectl exec `kubectl get pods | grep ibm-db2oltp-dev | awk '{print $1}'` -- b
 1. Install MQ using the [mq_values.yaml](installation/middleware/mq_values.yaml) file:
 
 ```
-$ helm install -n st-mq --namespace stocktrader --tls ibm-charts/ibm-mqadvanced-server-dev -f mq_values.yaml
+$ helm install -n st-mq --namespace stocktrader --tls ibm-charts/ibm-mqadvanced-server-dev -f installation/middleware/mq_values.yaml
 NAME:   st-mq
 LAST DEPLOYED: Thu Jun 28 16:38:22 2018
 NAMESPACE: stocktrader
@@ -314,7 +314,7 @@ and using `admin` as the user and `passw0rd` as its password (Anyway, you could 
 1. Install Redis using the [redis_values.yaml](installation/middleware/redis_values.yaml) file:
 
 ```
-$ helm install -n st-redis --namespace stocktrader --tls stable/redis -f redis_values.yaml
+$ helm install -n st-redis --namespace stocktrader --tls stable/redis -f installation/middleware/redis_values.yaml
 NAME:   st-redis
 E0628 18:14:21.431010   11573 portforward.go:303] error copying from remote stream to local connection: readfrom tcp4 127.0.0.1:55225->127.0.0.1:55228: write tcp4 127.0.0.1:55225->127.0.0.1:55228: write: broken pipe
 LAST DEPLOYED: Thu Jun 28 18:14:19 2018
@@ -383,7 +383,7 @@ To connect to your database from outside the cluster execute the following comma
 1. Install IBM Operational Decision Manager (ODM) using the [odm_values.yaml](installation/middleware/odm_values.yaml) file:
 
 ```
-$ helm install -n st-odm --namespace stocktrader --tls ibm-charts/ibm-odm-dev -f odm_values.yaml
+$ helm install -n st-odm --namespace stocktrader --tls ibm-charts/ibm-odm-dev -f installation/middleware/odm_values.yaml
 NAME:   st-odm
 LAST DEPLOYED: Thu Jun 28 18:53:45 2018
 NAMESPACE: stocktrader
@@ -674,7 +674,7 @@ ibm-charts              	https://raw.githubusercontent.com/IBM/charts/master/rep
 **TIP:** Remember you can use the **--set variable=value** to overwrite values within the [st_app_values_v2.yaml](installation/application/st_app_values_v2.yaml) file.
 
 ```
-$ helm install -n test --tls --namespace stocktrader -f st_app_values_v2.yaml stocktrader/stocktrader-app --version "0.2.0" --set route.twitter.enabled=true --set trader.image.tag=basicregistry
+$ helm install -n test --tls --namespace stocktrader -f installation/application/st_app_values_v2.yaml stocktrader/stocktrader-app --version "0.2.0" --set route.twitter.enabled=true --set trader.image.tag=basicregistry
 NAME:   test
 LAST DEPLOYED: Mon Jul  2 13:39:28 2018
 NAMESPACE: stocktrader
