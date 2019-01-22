@@ -313,4 +313,4 @@ tradr:
   service:
     type: ClusterIP
     servicePort:
-      port:
+      port: 3000
