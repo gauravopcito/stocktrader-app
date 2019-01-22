@@ -409,7 +409,7 @@ st-odm-ibm-odm-dev-6699d55df5-fv9lv  1/1    Running  0         3s
 NOTES:
 st-odm is ready to use. st-odm is an instance of the ibm-odm-dev chart.
 
-st-odm uses version 8.9.2 of the IBM® Operational Decision Manager (ODM) components.
+st-odm uses version 8.10.0.0 of the IBM® Operational Decision Manager (ODM) components.
 
 ODM Information
 ----------------
