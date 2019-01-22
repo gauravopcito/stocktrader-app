@@ -4,12 +4,12 @@
 image:
   registry: docker.io
   repository: bitnami/redis
-  tag: 4.0.10
+  tag: 4.0.12
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -36,7 +36,7 @@ metrics:
   image:
     registry: docker.io
     repository: oliver006/redis_exporter
-    tag: v0.19.1
+    tag: v0.25.0
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
@@ -131,7 +131,9 @@ master:
   ## Can be used to disable Redis commands for security reasons.
   ## ref: https://github.com/bitnami/bitnami-docker-redis#disabling-redis-commands
   ##
-  disableCommands: "FLUSHDB,FLUSHALL"
+  disableCommands:
+  - FLUSHDB
+  - FLUSHALL
   ## Enable persistence using Persistent Volume Claims
   ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
   ##
