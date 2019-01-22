@@ -739,12 +739,12 @@ Here we are going to explain how to quickly verify our IBM StockTrader Applicati
 
 ```
 $ helm list --namespace stocktrader --tls
-NAME    	REVISION	UPDATED                 	STATUS  	CHART                          	NAMESPACE  
-st-db2  	1       	Wed Jun 27 18:49:04 2018	DEPLOYED	ibm-db2oltp-dev-3.0.0          	stocktrader
-st-mq   	1       	Thu Jun 28 16:38:22 2018	DEPLOYED	ibm-mqadvanced-server-dev-1.3.0	stocktrader
-st-odm  	1       	Thu Jun 28 18:53:45 2018	DEPLOYED	ibm-odm-dev-1.0.0              	stocktrader
-st-redis	1       	Thu Jun 28 18:20:55 2018	DEPLOYED	redis-3.3.6                    	stocktrader
-test    	1       	Mon Jul  2 13:39:28 2018	DEPLOYED	stocktrader-app-0.2.0          	stocktrader
+NAME      REVISION  UPDATED                   STATUS    CHART                           NAMESPACE  
+st-db2    1         Tue Jan 22 10:47:36 2019  DEPLOYED  ibm-db2oltp-dev-3.2.0           stocktrader
+st-mq     1         Tue Jan 22 11:16:26 2019  DEPLOYED  ibm-mqadvanced-server-dev-2.2.0 stocktrader
+st-odm    1         Tue Jan 22 14:10:33 2019  DEPLOYED  ibm-odm-dev-2.0.0               stocktrader
+st-redis  1         Tue Jan 22 20:43:52 2019  DEPLOYED  redis-5.3.0                     stocktrader
+test      1         Tue Jan 22 20:36:34 2019  DEPLOYED  stocktrader-app-0.2.0           stocktrader
 ```
 
 2. Check all the Kubernetes resources created and deployed by the Helm charts from the Helm releases above, specially the Kubernetes pods, are all `Running` and looking good:
