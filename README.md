@@ -105,14 +105,14 @@ $ helm repo add stable https://kubernetes-charts.storage.googleapis.com
 
 #### IBM DB2
 
-User must be subscribed to [Db2 Developer-C Edition on Docker Store](https://store.docker.com/images/db2-developer-c-edition) so they can generate a key to access the image. After subscription, visit [Docker Cloud](https://cloud.docker.com/) and in the upper right corner, click on your user ID drop-down menu and select Account Settings. Scroll down and Add API key.
+User must be subscribed to [Db2 Developer-C Edition on Docker Hub](https://hub.docker.com/_/db2-developer-c-edition) in order to access the image.
 
-This way, the IBM Db2 Developer-C Edition Helm chart will be able to pull down the IBM Db2 Developer-C Edition Docker image by using your Docker Cloud credentials and the access key associated to it. We just finally need to store your Docker Cloud credentials into a Kubernetes secret which the IBM Db2 Developer-C Edition Helm chart will read at installation time.
+This way, the IBM Db2 Developer-C Edition Helm chart will be able to pull down the IBM Db2 Developer-C Edition Docker image by using your Docker Hub credentials. We need to store your Docker Hub credentials into a Kubernetes secret which the IBM Db2 Developer-C Edition Helm chart will read at installation time.
 
-1. Crete a secret that holds your Docker Cloud credentials & Db2 Developer-C Edition API key to retrieve the Db2 Developer-C Edition docker image:
+1. Create a secret that holds your Docker Hub credentials & Db2 Developer-C Edition API key to retrieve the Db2 Developer-C Edition docker image:
 
 ```
-$ kubectl create secret docker-registry st-docker-registry --docker-username=<userid> --docker-password=<API key> --docker-email=<email> --namespace=stocktrader
+$ kubectl create secret docker-registry st-docker-registry --docker-username=<userid> --docker-password=<password> --docker-email=<email> --namespace=stocktrader
 secret "st-docker-registry" created
 $ kubectl get secrets   
 NAME                  TYPE                                  DATA      AGE
