@@ -105,14 +105,14 @@ $ helm repo add stable https://kubernetes-charts.storage.googleapis.com
 
 #### IBM DB2
 
-User must be subscribed to [Db2 Developer-C Edition on Docker Store](https://store.docker.com/images/db2-developer-c-edition) so they can generate a key to access the image. After subscription, visit [Docker Cloud](https://cloud.docker.com/) and in the upper right corner, click on your user ID drop-down menu and select Account Settings. Scroll down and Add API key.
+User must be subscribed to [Db2 Developer-C Edition on Docker Hub](https://hub.docker.com/_/db2-developer-c-edition) in order to access the image.
 
-This way, the IBM Db2 Developer-C Edition Helm chart will be able to pull down the IBM Db2 Developer-C Edition Docker image by using your Docker Cloud credentials and the access key associated to it. We just finally need to store your Docker Cloud credentials into a Kubernetes secret which the IBM Db2 Developer-C Edition Helm chart will read at installation time.
+This way, the IBM Db2 Developer-C Edition Helm chart will be able to pull down the IBM Db2 Developer-C Edition Docker image by using your Docker Hub credentials. We need to store your Docker Hub credentials into a Kubernetes secret which the IBM Db2 Developer-C Edition Helm chart will read at installation time.
 
-1. Crete a secret that holds your Docker Cloud credentials & Db2 Developer-C Edition API key to retrieve the Db2 Developer-C Edition docker image:
+1. Create a secret that holds your Docker Hub credentials & Db2 Developer-C Edition API key to retrieve the Db2 Developer-C Edition docker image:
 
 ```
-$ kubectl create secret docker-registry st-docker-registry --docker-username=<userid> --docker-password=<API key> --docker-email=<email> --namespace=stocktrader
+$ kubectl create secret docker-registry st-docker-registry --docker-username=<userid> --docker-password=<password> --docker-email=<email> --namespace=stocktrader
 secret "st-docker-registry" created
 $ kubectl get secrets   
 NAME                  TYPE                                  DATA      AGE
@@ -123,7 +123,7 @@ st-docker-registry    kubernetes.io/dockercfg               1         28s
 2. Install IBM Db2 Developer-C Edition using the [db2_values.yaml](installation/middleware/db2_values.yaml) file:
 
 ```
-$ helm install -n st-db2 --namespace stocktrader --tls ibm-charts/ibm-db2oltp-dev -f db2_values.yaml
+$ helm install -n st-db2 --namespace stocktrader --tls ibm-charts/ibm-db2oltp-dev -f installation/middleware/db2_values.yaml
 NAME:   st-db2
 LAST DEPLOYED: Wed Jun 27 18:49:04 2018
 NAMESPACE: stocktrader
@@ -172,11 +172,11 @@ At this point we can be sure the IBM Db2 Developer-C Edition and the **STOCKTRD*
 3. Now, we need to create the appropriate structure in the **STOCKTRD** database that the IBM StockTrader Application needs. We do so by initialising the database with the [initialise_stocktrader_db_v2.yaml](installation/middleware/initialise_stocktrader_db_v2.yaml) file:
 
 ```
-$ kubectl apply -f initialise_stocktrader_db_v2.yaml
+$ kubectl apply -f installation/middleware/initialise_stocktrader_db_v2.yaml
 job "initialise-stocktrader-db" created
 ```
 
-the command above created a Kubernetes job which spun up a simple db2express-c container that contains the IBM DB2 tools to execute an sql file against a DB2 database on a remote host. The sql file that gets executed against a DB2 database on a remote host is actually the one that initialises the database with appropriate structures the IBM StockTrader Application needs. The sql file is [initialise_stocktrader_db_v2.sql](installation/middleware/initialise_stocktrader_db_v2.sql).
+The command above created a Kubernetes job which spun up a simple db2express-c container that contains the IBM DB2 tools to execute an sql file against a DB2 database on a remote host. The sql file that gets executed against a DB2 database on a remote host is actually the one that initialises the database with appropriate structures the IBM StockTrader Application needs. The sql file is [initialise_stocktrader_db_v2.sql](installation/middleware/initialise_stocktrader_db_v2.sql).
 
 Check the Kubernetes job to make sure it has finished before moving on:
 
@@ -209,7 +209,7 @@ $ kubectl exec `kubectl get pods | grep ibm-db2oltp-dev | awk '{print $1}'` -- b
 1. Install MQ using the [mq_values.yaml](installation/middleware/mq_values.yaml) file:
 
 ```
-$ helm install -n st-mq --namespace stocktrader --tls ibm-charts/ibm-mqadvanced-server-dev -f mq_values.yaml
+$ helm install -n st-mq --namespace stocktrader --tls ibm-charts/ibm-mqadvanced-server-dev -f installation/middleware/mq_values.yaml
 NAME:   st-mq
 LAST DEPLOYED: Thu Jun 28 16:38:22 2018
 NAMESPACE: stocktrader
@@ -313,8 +313,10 @@ and using `admin` as the user and `passw0rd` as its password (Anyway, you could 
 
 1. Install Redis using the [redis_values.yaml](installation/middleware/redis_values.yaml) file:
 
+**Note:** Make sure to [add an image policy](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.1/manage_images/image_security.html) in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/bitnami/redis:*` registry.
+
 ```
-$ helm install -n st-redis --namespace stocktrader --tls stable/redis -f redis_values.yaml
+$ helm install -n st-redis --namespace stocktrader --tls stable/redis -f installation/middleware/redis_values.yaml
 NAME:   st-redis
 E0628 18:14:21.431010   11573 portforward.go:303] error copying from remote stream to local connection: readfrom tcp4 127.0.0.1:55225->127.0.0.1:55228: write tcp4 127.0.0.1:55225->127.0.0.1:55228: write: broken pipe
 LAST DEPLOYED: Thu Jun 28 18:14:19 2018
@@ -361,9 +363,9 @@ To connect to your Redis server:
 
 1. Run a Redis pod that you can use as a client:
 
-   kubectl run --namespace stocktrader st-redis-client --rm --tty -i \
+   kubectl run --namespace stocktrader st-redis-client --rm --tty -i --restart='Never' \
     --env REDIS_PASSWORD=$REDIS_PASSWORD \
-   --image docker.io/bitnami/redis:4.0.10 -- bash
+   --image docker.io/bitnami/redis:4.0.12 -- bash
 
 2. Connect using the Redis CLI:
    redis-cli -h st-redis-master -a $REDIS_PASSWORD
@@ -371,8 +373,7 @@ To connect to your Redis server:
 
 To connect to your database from outside the cluster execute the following commands:
 
-    export POD_NAME=$(kubectl get pods --namespace stocktrader -l "app=redis" -o jsonpath="{.items[0].metadata.name}")
-    kubectl port-forward --namespace stocktrader $POD_NAME 6379:6379
+    kubectl port-forward --namespace stocktrader svc/st-redis 6379:6379 &
     redis-cli -h 127.0.0.1 -p 6379 -a $REDIS_PASSWORD
 ```
 
@@ -383,7 +384,7 @@ To connect to your database from outside the cluster execute the following comma
 1. Install IBM Operational Decision Manager (ODM) using the [odm_values.yaml](installation/middleware/odm_values.yaml) file:
 
 ```
-$ helm install -n st-odm --namespace stocktrader --tls ibm-charts/ibm-odm-dev -f odm_values.yaml
+$ helm install -n st-odm --namespace stocktrader --tls ibm-charts/ibm-odm-dev -f installation/middleware/odm_values.yaml
 NAME:   st-odm
 LAST DEPLOYED: Thu Jun 28 18:53:45 2018
 NAMESPACE: stocktrader
@@ -410,7 +411,7 @@ st-odm-ibm-odm-dev-6699d55df5-fv9lv  1/1    Running  0         3s
 NOTES:
 st-odm is ready to use. st-odm is an instance of the ibm-odm-dev chart.
 
-st-odm uses version 8.9.2 of the IBM® Operational Decision Manager (ODM) components.
+st-odm uses version 8.10.0.0 of the IBM® Operational Decision Manager (ODM) components.
 
 ODM Information
 ----------------
@@ -659,6 +660,8 @@ Now that we are sure our configuration [st_app_values_v2.yaml](installation/appl
 
 1. Add the IBM StockTrader Helm repository:
 
+**Note:** Make sure to [add an image policy](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.1/manage_images/image_security.html) in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/ibmstocktrader/*` registry.
+
 ```
 $ helm repo add stocktrader https://raw.githubusercontent.com/ibm-cloud-architecture/stocktrader-helm-repo/master/docs/charts
 $ helm repo list
@@ -674,7 +677,7 @@ ibm-charts              	https://raw.githubusercontent.com/IBM/charts/master/rep
 **TIP:** Remember you can use the **--set variable=value** to overwrite values within the [st_app_values_v2.yaml](installation/application/st_app_values_v2.yaml) file.
 
 ```
-$ helm install -n test --tls --namespace stocktrader -f st_app_values_v2.yaml stocktrader/stocktrader-app --version "0.2.0" --set route.twitter.enabled=true --set trader.image.tag=basicregistry
+$ helm install -n test --tls --namespace stocktrader -f installation/application/st_app_values_v2.yaml stocktrader/stocktrader-app --version "0.2.0" --set route.twitter.enabled=true --set trader.image.tag=basicregistry
 NAME:   test
 LAST DEPLOYED: Mon Jul  2 13:39:28 2018
 NAMESPACE: stocktrader
@@ -736,12 +739,12 @@ Here we are going to explain how to quickly verify our IBM StockTrader Applicati
 
 ```
 $ helm list --namespace stocktrader --tls
-NAME    	REVISION	UPDATED                 	STATUS  	CHART                          	NAMESPACE  
-st-db2  	1       	Wed Jun 27 18:49:04 2018	DEPLOYED	ibm-db2oltp-dev-3.0.0          	stocktrader
-st-mq   	1       	Thu Jun 28 16:38:22 2018	DEPLOYED	ibm-mqadvanced-server-dev-1.3.0	stocktrader
-st-odm  	1       	Thu Jun 28 18:53:45 2018	DEPLOYED	ibm-odm-dev-1.0.0              	stocktrader
-st-redis	1       	Thu Jun 28 18:20:55 2018	DEPLOYED	redis-3.3.6                    	stocktrader
-test    	1       	Mon Jul  2 13:39:28 2018	DEPLOYED	stocktrader-app-0.2.0          	stocktrader
+NAME      REVISION  UPDATED                   STATUS    CHART                           NAMESPACE  
+st-db2    1         Tue Jan 22 10:47:36 2019  DEPLOYED  ibm-db2oltp-dev-3.2.0           stocktrader
+st-mq     1         Tue Jan 22 11:16:26 2019  DEPLOYED  ibm-mqadvanced-server-dev-2.2.0 stocktrader
+st-odm    1         Tue Jan 22 14:10:33 2019  DEPLOYED  ibm-odm-dev-2.0.0               stocktrader
+st-redis  1         Tue Jan 22 20:43:52 2019  DEPLOYED  redis-5.3.0                     stocktrader
+test      1         Tue Jan 22 20:36:34 2019  DEPLOYED  stocktrader-app-0.2.0           stocktrader
 ```
 
 2. Check all the Kubernetes resources created and deployed by the Helm charts from the Helm releases above, specially the Kubernetes pods, are all `Running` and looking good:
