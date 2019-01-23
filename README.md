@@ -313,6 +313,8 @@ and using `admin` as the user and `passw0rd` as its password (Anyway, you could 
 
 1. Install Redis using the [redis_values.yaml](installation/middleware/redis_values.yaml) file:
 
+**Note:** Make sure to [add an image policy](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.1/manage_images/image_security.html) in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/bitnami/redis:*` registry.
+
 ```
 $ helm install -n st-redis --namespace stocktrader --tls stable/redis -f installation/middleware/redis_values.yaml
 NAME:   st-redis
@@ -447,8 +449,6 @@ To learn more about the st-odm release, try:
 ```
 
 **IMPORTANT:** The IBM Operational Decision Manager (ODM) installed is a non-persistent IBM ODM deployment.
-
-**Note:** Make sure to add an image policy in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/bitnami/redis:*` registry.
 
 2. We now need to import the already developed loyalty level IBM ODM project which our IBM StockTrader Application will use. To import the such project:
 
@@ -660,6 +660,8 @@ Now that we are sure our configuration [st_app_values_v2.yaml](installation/appl
 
 1. Add the IBM StockTrader Helm repository:
 
+**Note:** Make sure to [add an image policy](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.1/manage_images/image_security.html) in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/ibmstocktrader/*` registry.
+
 ```
 $ helm repo add stocktrader https://raw.githubusercontent.com/ibm-cloud-architecture/stocktrader-helm-repo/master/docs/charts
 $ helm repo list
@@ -669,8 +671,6 @@ local                   	http://127.0.0.1:8879/charts
 stocktrader                      	https://raw.githubusercontent.com/ibm-cloud-architecture/stocktrader-helm-repo/master/docs/charts                      
 ibm-charts              	https://raw.githubusercontent.com/IBM/charts/master/repo/stable/  
 ```
-
-**Note:** Make sure to add an image policy in ICP console (Manage->Resource Security->Image Policies) to allow pulling images from `docker.io/ibmstocktrader/*` registry.
 
 2. Deploy the IBM StockTrader Application using the [st_app_values_v2.yaml](installation/application/st_app_values_v2.yaml) file:
 
